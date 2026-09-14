@@ -1,0 +1,25 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+.env
+.env.*
+!.env.example
+
+.rembg/
+.u2net/
+*.onnx
+
+# Keep private photos and printouts out of the repository.
+/photos/
+/output/
+/*.[jJ][pP][gG]
+/*.[jJ][pP][eE][gG]
+/*.[pP][nN][gG]
+/*.[wW][eE][bB][pP]
+/*.[tT][iI][fF]
+/*.[tT][iI][fF][fF]
+/*.[bB][mM][pP]
+/*.[hH][eE][iI][cC]
+/*.[pP][dD][fF]

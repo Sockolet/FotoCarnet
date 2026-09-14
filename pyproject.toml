@@ -1,0 +1,13 @@
+[project]
+name = "fotocarnet"
+version = "0.1.0"
+description = "Fotos de carnet en una esquina del A4, a tamaño real."
+requires-python = ">=3.11"
+dependencies = [
+    "pillow>=11,<13",
+    "PySide6>=6.10,<7",
+    "rembg[cpu]>=2.0.67,<3",
+]
+
+[tool.uv]
+package = false
