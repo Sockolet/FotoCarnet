@@ -1,6 +1,8 @@
 # FotoCarnet
 
-Una aplicación de escritorio pequeña: eliges una foto, indicas cuántas quieres y las imprimes **a tamaño real, agrupadas en una esquina del A4**. Sin cuentas, navegador ni subida de imágenes.
+El propósito de **FotoCarnet** es **facilitar la impresión a tamaño real de fotos de carnet**.
+
+Una aplicación de escritorio pequeña: eliges una foto, defines sus medidas y el número de copias, y las imprimes agrupadas en una esquina del A4 para aprovechar el resto del papel. Sin cuentas, navegador ni subida de imágenes.
 
 ## Abrir
 
