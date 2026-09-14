@@ -4,17 +4,190 @@ El propósito de **FotoCarnet** es **facilitar la impresión a tamaño real de f
 
 Una aplicación de escritorio pequeña: eliges una foto, defines sus medidas y el número de copias, y las imprimes agrupadas en una esquina del A4 para aprovechar el resto del papel. Sin cuentas, navegador ni subida de imágenes.
 
-## Abrir
+## Instalación y ejecución
 
-Con [uv](https://docs.astral.sh/uv/getting-started/installation/) instalado:
+Elige tu sistema: [Linux](#linux) · [Windows](#windows) · [macOS](#macos).
+
+Los pasos instalan la aplicación desde su código fuente. Usaremos [uv](https://docs.astral.sh/uv/getting-started/installation/) para descargar **Python 3.13** y preparar `.venv`, una carpeta con las dependencias de FotoCarnet separadas del resto del sistema. **No necesitas instalar Python a mano ni activar un entorno virtual.**
+
+Necesitas conexión para la instalación inicial y para descargar el modelo la primera vez que uses el fondo blanco automático. No necesitas una cuenta de GitHub ni una tarjeta gráfica dedicada. Para imprimir en papel, configura antes tu impresora en los ajustes de tu sistema.
+
+### Compatibilidad de esta guía
+
+| Sistema | Equipo y versión |
+| --- | --- |
+| Linux | Escritorio de 64 bits. En Intel/AMD, Ubuntu 22.04+ o Debian 12+ son ejemplos adecuados; en ARM64, Ubuntu 24.04+. |
+| Windows | Windows 10 u 11 de 64 bits en un equipo Intel/AMD (x64). |
+| macOS | macOS 14 Sonoma o posterior en un Mac con Apple Silicon (M1, M2, M3, etc.). |
+
+Estos límites tienen en cuenta las versiones fijadas en [`uv.lock`](uv.lock). En otras distribuciones Linux se necesita glibc, una biblioteca del sistema, 2.34+ en x64 o 2.39+ en ARM64. **Mac Intel y Windows ARM64 no disponen de todas las dependencias precompiladas de esta versión y no están cubiertos por estos pasos.**
+
+La interfaz y la impresión se han utilizado en Linux. Las instrucciones de Windows y macOS se basan en sus herramientas de instalación y en las dependencias disponibles; todavía no se ha comprobado su ejecución en esos sistemas.
+
+### Linux
+
+Los comandos de paquetes del primer paso son para **Ubuntu o Debian**. En otras distribuciones, instala sus equivalentes con el gestor de paquetes correspondiente; el resto de los pasos es igual. Necesitas una sesión de escritorio, no únicamente una terminal remota sin interfaz gráfica.
+
+1. **Abre una terminal e instala Git, curl y las bibliotecas gráficas.** Git descargará el proyecto y curl, el instalador de uv. `sudo` puede pedir la contraseña de tu usuario:
+
+   ```sh
+   sudo apt update
+   sudo apt install git curl libegl1 libgl1 libopengl0 \
+     libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxkbcommon-x11-0
+   ```
+
+2. **Instala uv** con su instalador oficial:
+
+   ```sh
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+3. **Cierra y vuelve a abrir la terminal.** Comprueba que los dos comandos muestran un número de versión:
+
+   ```sh
+   git --version
+   uv --version
+   ```
+
+4. **Descarga FotoCarnet en tu carpeta personal y entra en el proyecto:**
+
+   ```sh
+   cd ~
+   git clone https://github.com/Sockolet/FotoCarnet.git
+   cd FotoCarnet
+   ```
+
+5. **Instala Python y las dependencias de la aplicación.** Espera a que ambos comandos terminen; la primera descarga puede tardar varios minutos:
+
+   ```sh
+   uv python install 3.13
+   uv sync --locked --python 3.13
+   ```
+
+6. **Abre la aplicación.** Estos son también los comandos para abrirla otro día, sin repetir la instalación:
+
+   ```sh
+   cd ~/FotoCarnet
+   ./iniciar.sh
+   ```
+
+### Windows
+
+Usa **PowerShell**, disponible en el menú Inicio o en Windows Terminal. No hace falta usar WSL ni Git Bash.
+
+1. **Instala Git y uv** con WinGet. Acepta los permisos que soliciten sus instaladores:
+
+   ```powershell
+   winget install --id Git.Git -e --source winget
+   winget install --id astral-sh.uv -e --source winget
+   ```
+
+   Si `winget` no se reconoce, instala o actualiza **Instalador de aplicación** siguiendo la [guía oficial de WinGet](https://learn.microsoft.com/windows/package-manager/winget/), abre otra ventana de PowerShell y vuelve a ejecutar los comandos.
+
+2. **Instala el runtime de Visual C++ para x64**, necesario para ONNX Runtime, el motor del fondo blanco. Descarga la versión **X64** desde la [página oficial de Microsoft](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist), abre el instalador y sigue sus pasos. Si ya tienes una versión compatible instalada, no necesitas reinstalarla.
+
+3. **Cierra y vuelve a abrir PowerShell** y comprueba que aparecen los números de versión:
+
+   ```powershell
+   git --version
+   uv --version
+   ```
+
+4. **Descarga FotoCarnet en tu carpeta de usuario y entra en el proyecto:**
+
+   ```powershell
+   cd $HOME
+   git clone https://github.com/Sockolet/FotoCarnet.git
+   cd FotoCarnet
+   ```
+
+5. **Instala Python y las dependencias** y espera a que terminen las descargas:
+
+   ```powershell
+   uv python install 3.13
+   uv sync --locked --python 3.13
+   ```
+
+6. **Abre la aplicación.** Repite estos comandos cuando quieras volver a usarla:
+
+   ```powershell
+   cd "$HOME\FotoCarnet"
+   uv run --locked python -m fotocarnet
+   ```
+
+   En PowerShell no uses `./iniciar.sh`: ese lanzador es para shells de Unix. Tampoco necesitas ejecutar `Activate.ps1` ni cambiar la política de ejecución de PowerShell.
+
+### macOS
+
+Estos pasos son para **Apple Silicon con macOS 14 o posterior**. Puedes consultar el chip y la versión del sistema en el menú Apple → **Acerca de este Mac**. Usa Terminal de forma nativa, no bajo Rosetta.
+
+1. **Abre Terminal**, en Aplicaciones → Utilidades, e instala las herramientas de línea de comandos de Apple, que incluyen Git:
+
+   ```sh
+   xcode-select --install
+   ```
+
+   Completa la instalación en la ventana que se abra y espera a que termine. Si las herramientas ya están instaladas, continúa con el siguiente paso.
+
+2. **Instala uv** con su instalador oficial:
+
+   ```sh
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+3. **Cierra y vuelve a abrir Terminal** y comprueba que ambos comandos muestran una versión:
+
+   ```sh
+   git --version
+   uv --version
+   ```
+
+4. **Descarga FotoCarnet en tu carpeta personal y entra en el proyecto:**
+
+   ```sh
+   cd ~
+   git clone https://github.com/Sockolet/FotoCarnet.git
+   cd FotoCarnet
+   ```
+
+5. **Instala Python y las dependencias** y espera a que finalice la descarga:
+
+   ```sh
+   uv python install 3.13
+   uv sync --locked --python 3.13
+   ```
+
+6. **Abre la aplicación.** Usa estos mismos comandos para volver a abrirla otro día:
+
+   ```sh
+   cd ~/FotoCarnet
+   uv run --locked python -m fotocarnet
+   ```
+
+### Después de instalar
+
+Los pasos 1–5 solo se hacen la primera vez. Después basta con el paso 6 de tu sistema. Mantén la terminal abierta mientras usas la aplicación y cierra la ventana de FotoCarnet al terminar.
+
+Si ya tenías el proyecto descargado, omite `git clone` y usa tu carpeta existente. Las instrucciones anteriores lo guardan en `FotoCarnet` dentro de tu carpeta personal; si lo has guardado en otro sitio, cambia la ruta de `cd` por la tuya.
+
+Puedes seleccionar una imagen con **Elegir foto…**, o pasar su ruta entre comillas al arrancar:
 
 ```sh
-./iniciar.sh
+uv run --locked python -m fotocarnet "photos/foto.jpg"
 ```
 
-La primera ejecución instala las dependencias en `.venv`; las siguientes reutilizan ese entorno. También puedes pasar una imagen: `./iniciar.sh /ruta/foto.jpg`.
+En ese ejemplo, `photos/foto.jpg` debe ser una foto existente dentro del proyecto; puedes sustituirlo por la ruta de tu imagen.
 
-Alternativa con Python 3.11 o posterior y un entorno virtual: instala las dependencias indicadas en `pyproject.toml` y ejecuta `python -m fotocarnet` desde esta carpeta.
+### Si no se abre
+
+| Problema | Qué hacer |
+| --- | --- |
+| `uv` o `git` no se reconoce | Cierra y abre otra terminal después de instalarlo. Si continúa, revisa la instalación de esa herramienta antes de seguir. |
+| No se encuentra `pyproject.toml` o el módulo `fotocarnet` | Entra con `cd` en la carpeta del proyecto, la que contiene este README, y vuelve a ejecutar el comando. |
+| Linux: error de Qt, `xcb` o biblioteca gráfica ausente | Comprueba que instalaste los paquetes del paso 1 y que estás en una sesión de escritorio. En otras distribuciones, instala sus bibliotecas equivalentes. |
+| Windows: error de carga de una DLL de ONNX Runtime | Instala o actualiza el runtime de Visual C++ **X64** del paso 2 y vuelve a abrir la app. |
+| Linux: `Permission denied` al ejecutar el lanzador | Desde la carpeta del proyecto, ejecuta `sh iniciar.sh`. Puede ocurrir si descargaste un ZIP en lugar de clonar con Git. |
+| No hay una distribución compatible de una dependencia | Revisa la tabla de compatibilidad y usa Python 3.13 con `uv sync --locked --python 3.13`; no cambies las versiones de las dependencias al azar. |
 
 ## Uso
 
@@ -47,9 +220,20 @@ Las fotos se procesan en memoria. La aplicación no las guarda ni las envía a s
 
 ## Desarrollo
 
+En Linux/macOS:
+
 ```sh
 uv sync --locked
 QT_QPA_PLATFORM=offscreen uv run --locked python -m unittest discover -v
+```
+
+En PowerShell:
+
+```powershell
+uv sync --locked
+$env:QT_QPA_PLATFORM = "offscreen"
+uv run --locked python -m unittest discover -v
+Remove-Item Env:QT_QPA_PLATFORM
 ```
 
 `fotocarnet/layout.py` calcula medidas, encuadre, esquinas y hojas sin depender de Qt. `printing.py` comparte el dibujo de las fotos con la vista previa y convierte milímetros a puntos del dispositivo. `app.py` contiene la interfaz. `background_job.py` ejecuta el modelo en un proceso cancelable; `background.py` recibe y devuelve la imagen por tuberías, sin archivos de fotos temporales. Las pruebas usan `unittest` y las dependencias de la aplicación; no descargan el modelo ni necesitan red.
